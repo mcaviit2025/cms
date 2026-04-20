@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Send Codes</title>
+  <link rel="stylesheet" href="/css/send-code.css">
+</head>
+
+<body>
+
+<div class="header">
+  <div class="logo">CMS Admin</div>
+</div>
+
+<div class="navbar">
+  <div class="nav-center">
+    <a href="/admin/dashboard">Dashboard</a>
+    <a href="/admin/add-event">Create Event</a>
+    <a href="/admin/registrations">Registrations</a>
+    <a href="/admin/send-email/0" class="active">Send Codes</a>
+  </div>
+</div>
+
+<div class="main">
+
+  <h2>Send Participant Codes</h2>
+
+  <!-- SELECT EVENT -->
+  <select onchange="if(this.value!=0) location='/admin/send-email/'+this.value;">
+    <option value="0">Select Event</option>
+
+    <option th:each="e : ${events}"
+            th:value="${e.eventId}"
+            th:text="${e.eventName}"
+            th:selected="${selectedEvent != null and e.eventId == selectedEvent}">
+    </option>
+  </select>
+
+  <br><br>
+
+  <!-- BUTTON -->
+  <form th:if="${selectedEvent != null}" method="post" action="/admin/send-codes">
+    <input type="hidden" name="eventId" th:value="${selectedEvent}">
+    <button type="submit">Send Codes</button>
+  </form>
+
+  <br><br>
+
+  <!-- TABLE -->
+  <table class="reg-table" th:if="${registrations != null}">
+
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Code</th>
+      <th>Email Status</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="r : ${registrations}">
+
+      <td th:text="${r.leaderName}"></td>
+      <td th:text="${r.leaderEmail}"></td>
+
+      <td th:text="${r.participantCode != null ? r.participantCode : '-'}"></td>
+
+      <td>
+                <span th:text="${r.emailStatus}"
+                      th:classappend="
+                        ${r.emailStatus=='SENT'} ? 'status approved' :
+                        'status pending'">
+                </span>
+      </td>
+
+    </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <p style="margin-bottom: 8px;">
+      Designed & Developed with <span style="color: #DC2626;"></span> by
+      <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+    </p>
+    <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+  </div>
+</footer>
+</body>
+</html>

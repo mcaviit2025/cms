@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Payments</title>
+    <link rel="stylesheet" href="/css/verify.css">
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">CMS Admin</div>
+</div>
+
+<div class="navbar">
+    <div class="nav-center">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/add-event">Create Event</a>
+        <a href="/admin/registrations" class="active">Registrations</a>
+    </div>
+</div>
+
+<div class="main">
+
+    <h2>Verify Payments</h2>
+
+    <!-- EVENT SELECT -->
+    <select onchange="location = this.value;">
+        <option>Select Event</option>
+        <option th:each="e : ${events}"
+                th:value="'/admin/registrations/' + ${e.eventId}"
+                th:text="${e.eventName}"
+                th:selected="${selectedEvent != null and e.eventId == selectedEvent}">
+        </option>
+    </select>
+
+    <table class="reg-table">
+
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>UTR</th>
+            <th>Proof</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="r : ${registrations}">
+
+            <!-- BASIC DETAILS -->
+            <td th:text="${r.leaderName}"></td>
+            <td th:text="${r.leaderEmail}"></td>
+
+            <!-- UTR -->
+            <td th:text="${r.utrNumber}"></td>
+
+            <!-- FILE -->
+            <td>
+                <a th:if="${paymentMap.containsKey(r.id)}"
+                   th:href="@{'/uploads/' + ${paymentMap[r.id].filePath}}"
+                   target="_blank">View</a>
+
+                <span th:if="${!paymentMap.containsKey(r.id)}">No File</span>
+            </td>
+
+            <!-- STATUS -->
+            <td>
+                <span th:text="${r.status}"
+                      th:classappend="
+                        ${#strings.equalsIgnoreCase(r.status,'APPROVED')} ? 'status approved' :
+                        (${#strings.equalsIgnoreCase(r.status,'REJECTED')} ? 'status rejected' : 'status pending')
+                      ">
+                </span>
+            </td>
+
+            <!-- ACTION -->
+            <td>
+
+                <!-- PENDING -->
+                <div th:if="${#strings.equalsIgnoreCase(r.status,'PENDING')}">
+                    <a th:href="@{'/admin/approve/' + ${r.id}}" class="btn approve">Approve</a>
+                    <a th:href="@{'/admin/reject/' + ${r.id}}" class="btn reject">Reject</a>
+                </div>
+
+                <!-- APPROVED -->
+                <span th:if="${#strings.equalsIgnoreCase(r.status,'APPROVED')}">
+                    ✔ Approved
+                </span>
+
+                <!-- REJECTED -->
+                <span th:if="${#strings.equalsIgnoreCase(r.status,'REJECTED')}">
+                    ✖ Rejected
+                </span>
+
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>

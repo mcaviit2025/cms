@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate Management - CMS Admin</title>
+    <link rel="stylesheet" href="/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .certificate-section {
+            margin-top: 30px;
+        }
+
+        .event-selector {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .event-selector select {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            border: 1px solid #E5E2D9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            margin: 20px 0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #1D4ED8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-success {
+            background: #10B981;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-warning {
+            background: #F59E0B;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .participant-table {
+            width: 100%;
+            background: white;
+            border: 1px solid #E5E2D9;
+            border-radius: 12px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .participant-table th {
+            text-align: left;
+            padding: 14px;
+            background: #F8F9FA;
+            font-weight: 600;
+            border-bottom: 1px solid #E5E2D9;
+        }
+
+        .participant-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #E5E2D9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-approved {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .info-box {
+            background: #EFF6FF;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 3px solid #1D4ED8;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">CMS Admin</div>
+    <div class="header-right">
+        <span>Admin</span>
+        <a href="/admin/logout">Logout</a>
+    </div>
+</div>
+
+<div class="navbar">
+    <div class="nav-center">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/add-event">Create Event</a>
+        <a href="/admin/events">Events</a>
+        <a href="/admin/registrations">Registrations</a>
+        <a href="/admin/judges">Manage Judges</a>
+        <a href="/admin/assign-judge">Assign Judge</a>
+        <a href="/admin/design-criteria">Design Criteria</a>
+        <a href="/admin/certificates" class="active">Certificates</a>
+        <a href="/judge/login" target="_blank">Judge Login</a>
+    </div>
+</div>
+
+<div class="main">
+    <h2>Certificate Management</h2>
+
+    <div class="event-selector">
+        <h3>Select Event</h3>
+        <select id="eventSelect" onchange="loadParticipants()">
+            <option value="">-- Select Event --</option>
+            <option th:each="event : ${events}" th:value="${event.eventId}" th:text="${event.eventName}"></option>
+        </select>
+
+        <div id="eventActions" style="display: none;">
+            <div class="action-buttons">
+                <button class="btn-success" onclick="sendAllCertificates()">📧 Send Certificates to All</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="participantsSection" style="display: none;">
+        <div class="info-box">
+            <strong>ℹ️ Info:</strong> Certificates are automatically sent when a judge evaluates a participant.
+            Use this panel to manually resend certificates if needed.
+        </div>
+
+        <div class="loading" id="loading">Loading participants...</div>
+
+        <div id="participantsTable"></div>
+    </div>
+</div>
+
+<script>
+    function loadParticipants() {
+        const eventId = document.getElementById('eventSelect').value;
+
+        if (!eventId) {
+            document.getElementById('participantsSection').style.display = 'none';
+            document.getElementById('eventActions').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('participantsSection').style.display = 'block';
+        document.getElementById('eventActions').style.display = 'block';
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('participantsTable').innerHTML = '';
+
+        fetch('/admin/certificates/event/' + eventId)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+
+                if (data.length === 0) {
+                    document.getElementById('participantsTable').innerHTML = '<div class="info-box">No participants found for this event.</div>';
+                    return;
+                }
+
+                let html = `
+                    <table class="participant-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Participant Code</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Type</th>
+                                <th>Team</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                data.forEach((reg, index) => {
+                    const statusClass = reg.status === 'APPROVED' ? 'status-approved' : 'status-pending';
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${reg.participantCode || '-'}</td>
+                            <td>${reg.leaderName}</td>
+                            <td>${reg.leaderEmail}</td>
+                            <td>${reg.participationType}</td>
+                            <td>${reg.teamName || 'Solo'}</td>
+                            <td><span class="status-badge ${statusClass}">${reg.status}</span></td>
+                            <td>
+                                <button class="btn-primary btn-sm" onclick="downloadCertificate(${reg.id})">📥 Download</button>
+                                <button class="btn-success btn-sm" onclick="sendCertificate(${reg.id})">📧 Send Email</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                document.getElementById('participantsTable').innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('participantsTable').innerHTML = '<div class="info-box" style="color: red;">Error loading participants</div>';
+            });
+    }
+
+    function downloadCertificate(registrationId) {
+        window.open('/admin/certificates/download/' + registrationId, '_blank');
+    }
+
+    function sendCertificate(registrationId) {
+        if (confirm('Send certificate to this participant?')) {
+            fetch('/admin/certificates/send/' + registrationId, {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                })
+                .catch(error => {
+                    alert('Error sending certificate');
+                });
+        }
+    }
+
+    function sendAllCertificates() {
+        const eventId = document.getElementById('eventSelect').value;
+        if (confirm('Send certificates to ALL approved participants of this event?')) {
+            fetch('/admin/certificates/send-all/' + eventId, {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                })
+                .catch(error => {
+                    alert('Error sending certificates');
+                });
+        }
+    }
+</script>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>

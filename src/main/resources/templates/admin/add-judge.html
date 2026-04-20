@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Judge - CMS Admin</title>
+    <link rel="stylesheet" href="/css/admin-layout.css">
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">CMS Admin</div>
+    <div class="header-right">
+        <span>Admin</span>
+        <a href="/admin/logout">Logout</a>
+    </div>
+</div>
+
+<div class="navbar">
+    <div class="nav-center">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/add-event">Create Event</a>
+        <a href="/admin/events">Events</a>
+        <a href="/admin/registrations">Registrations</a>
+        <a href="/admin/judges" class="active">Manage Judges</a>
+        <a href="/admin/assign-judge">Assign Judge</a>
+        <a href="/admin/send-email/0">Generate Code</a>
+        <a href="#">Results</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="back-nav">
+        <a href="/admin/judges" class="back-btn">← Back to Judges</a>
+    </div>
+
+    <div class="form-card">
+        <h2>Add New Judge</h2>
+
+        <form action="/admin/judges/add" method="post">
+            <div class="form-group">
+                <label>Username *</label>
+                <input type="text" name="username" placeholder="e.g., judge_tech" required>
+                <small class="note">Unique username for login</small>
+            </div>
+
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" name="fullName" placeholder="e.g., Dr. John Smith" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password *</label>
+                <input type="text" name="password" placeholder="Enter password" required>
+                <small class="note">Password will be stored as plain text</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Create Judge</button>
+                <a href="/admin/judges" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>

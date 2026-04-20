@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Event</title>
+
+    <link rel="stylesheet" href="/css/add-event.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">CMS Admin</div>
+
+    <div class="nav-links">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/add-event" class="active">Create Event</a>
+    </div>
+
+    <div class="nav-right">
+        <span>Admin</span>
+    </div>
+</div>
+
+<div class="page">
+
+    <h2 class="page-title">Create New Event</h2>
+
+    <div class="form-card">
+
+        <form action="/admin/save-event" method="post" id="eventForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Event Name</label>
+                    <input type="text" name="eventName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Event Type</label>
+
+                    <input type="text" name="category" list="eventTypes" placeholder="Enter or select type" required>
+
+                    <datalist id="eventTypes">
+                        <option value="Technical">
+                        <option value="Cultural">
+                        <option value="Sports">
+                        <option value="Management">
+                        <option value="Workshop">
+                    </datalist>
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="eventDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Venue</label>
+                    <input type="text" name="venue" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Fee (₹)</label>
+                    <input type="number" name="fee" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Participation Type</label>
+                    <select name="participationType" id="typeSelect">
+                        <option>Solo</option>
+                        <option>Group</option>
+                        <option>Both</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="groupField" style="display:none;">
+                    <label>Members per Group</label>
+                    <input type="number" name="groupSize" min="1">
+                </div>
+
+                <div class="form-group full">
+                    <label>Max Participants</label>
+                    <input type="number" name="maxParticipants" min="1">
+                </div>
+
+                <div class="form-group full">
+                    <label>Description</label>
+                    <textarea name="description"></textarea>
+                </div>
+
+            </div>
+
+            <button type="submit" class="submit-btn">Create Event</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- SUCCESS MESSAGE -->
+<div id="toast" class="toast">Event Created Successfully 🎉</div>
+
+<!-- JS -->
+<script>
+
+    // Dynamic Group Field
+    const typeSelect = document.getElementById("typeSelect");
+    const groupField = document.getElementById("groupField");
+
+    typeSelect.addEventListener("change", function () {
+        groupField.style.display =
+            (this.value === "Group" || this.value === "Both") ? "block" : "none";
+    });
+
+    // Form Validation + Toast
+    const form = document.getElementById("eventForm");
+
+    form.addEventListener("submit", function (e) {
+
+        const fee = form.fee.value;
+        const max = form.maxParticipants.value;
+
+        if (fee < 0) {
+            alert("Fee cannot be negative");
+            e.preventDefault();
+            return;
+        }
+
+        if (max && max < 1) {
+            alert("Max participants must be at least 1");
+            e.preventDefault();
+            return;
+        }
+
+        // Show success toast (simulate)
+        setTimeout(() => {
+            document.getElementById("toast").style.display = "block";
+        }, 200);
+
+    });
+</script>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${event.eventName} + ' - Evaluation'"></title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
+
+        .header {
+            background: white;
+            padding: 0 30px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-size: 20px; font-weight: bold; color: #1D4ED8; }
+        .header-right a { color: #DC2626; text-decoration: none; margin-left: 15px; }
+
+        .main { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #1D4ED8; text-decoration: none; }
+
+        .event-header {
+            background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stat-number { font-size: 32px; font-weight: bold; color: #1D4ED8; }
+        .stat-label { font-size: 13px; color: #666; margin-top: 5px; }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .section-header.pending { background: #FEF3C7; color: #D97706; }
+        .section-header.my-eval { background: #D1FAE5; color: #065F46; }
+        .section-header.others { background: #EFF6FF; color: #1D4ED8; }
+
+        .participant-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .participant-table th {
+            text-align: left;
+            padding: 12px 15px;
+            background: #F8F9FA;
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .participant-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .code-cell { font-family: monospace; font-weight: bold; color: #1D4ED8; }
+        .score-cell { font-weight: bold; color: #059669; }
+
+        .btn-evaluate, .btn-edit {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .btn-evaluate { background: #1D4ED8; color: white; }
+        .btn-evaluate:hover { background: #1E40AF; }
+        .btn-edit { background: #F59E0B; color: white; }
+        .btn-edit:hover { background: #D97706; }
+
+        .empty-row td { text-align: center; padding: 40px; color: #999; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+
+        .modal-header h3 { font-size: 20px; }
+        .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
+
+        .participant-info {
+            background: #F8F9FA;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .criteria-row {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #F8F9FA;
+            border-radius: 8px;
+        }
+
+        .criteria-label { font-weight: 600; margin-bottom: 8px; }
+        .criteria-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .criteria-input:focus { outline: none; border-color: #1D4ED8; }
+
+        .total-score {
+            background: #EFF6FF;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .total-score strong { font-size: 24px; color: #1D4ED8; }
+
+        .btn-save { background: #1D4ED8; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-cancel { background: #9CA3AF; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+
+        .debug-box {
+            background: #FEF3C7;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            border-left: 3px solid #D97706;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .participant-table { display: block; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">TechFest 2025 - Judge Panel</div>
+    <div class="header-right">
+        <span th:text="${judgeName}">Judge</span>
+        <a href="/judge/logout">Logout</a>
+    </div>
+</div>
+
+<div class="main">
+    <a href="/judge/dashboard" class="back-link">← Back to Dashboard</a>
+
+    <div class="event-header">
+        <h2 th:text="${event.eventName}">Event Name</h2>
+        <p th:text="${event.eventDate} + ' | ' + ${event.venue}">Event Details</p>
+    </div>
+
+    <!-- Debug Box -->
+    <div class="debug-box">
+        <strong>🔍 Debug Info:</strong><br>
+        Criteria count: <span th:text="${criteria != null ? criteria.size() : 0}">0</span><br>
+        <span th:if="${criteria != null and !criteria.isEmpty()}">
+            Criteria: <span th:each="c, stat : ${criteria}"><strong th:text="${c.criteriaName}"></strong>(<span th:text="${c.maxMarks}"></span>)<span th:if="${!stat.last}">, </span></span>
+        </span>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number" th:text="${notEvaluated.size()}">0</div><div class="stat-label">Pending</div></div>
+        <div class="stat-card"><div class="stat-number" th:text="${evaluatedByMe.size()}">0</div><div class="stat-label">By Me</div></div>
+        <div class="stat-card"><div class="stat-number" th:text="${evaluatedByOthers.size()}">0</div><div class="stat-label">By Others</div></div>
+        <div class="stat-card"><div class="stat-number" th:text="${notEvaluated.size() + evaluatedByMe.size() + evaluatedByOthers.size()}">0</div><div class="stat-label">Total</div></div>
+    </div>
+
+    <!-- SECTION 1: NOT EVALUATED YET -->
+    <div class="section">
+        <div class="section-header pending">📋 NOT EVALUATED YET</div>
+        <table class="participant-table">
+            <thead><tr><th>Code</th><th>Name</th><th>Team</th><th>College</th><th>Action</th></tr></thead>
+            <tbody>
+            <tr th:each="reg : ${notEvaluated}">
+                <td class="code-cell" th:text="${reg.participantCode}">-</td>
+                <td th:text="${reg.leaderName}">-</td>
+                <td th:text="${reg.teamName != null ? reg.teamName : 'Solo'}">-</td>
+                <td th:text="${reg.college}">-</td>
+                <td><button class="btn-evaluate" th:data-reg-id="${reg.id}" th:data-name="${reg.leaderName}" th:data-code="${reg.participantCode}" onclick="openEvaluationModal(this)">Evaluate</button></td>
+            </tr>
+            <tr th:if="${notEvaluated.empty}"><td colspan="5" class="empty-row">✅ All evaluated!</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SECTION 2: EVALUATED BY ME -->
+    <div class="section">
+        <div class="section-header my-eval">⭐ EVALUATED BY ME</div>
+        <table class="participant-table">
+            <thead><tr><th>Code</th><th>Name</th><th>Team</th><th>Score</th><th>Action</th></tr></thead>
+            <tbody>
+            <tr th:each="reg : ${evaluatedByMe}">
+                <td class="code-cell" th:text="${reg.participantCode}">-</td>
+                <td th:text="${reg.leaderName}">-</td>
+                <td th:text="${reg.teamName != null ? reg.teamName : 'Solo'}">-</td>
+                <td class="score-cell" th:text="${myScoresMap[reg.id].totalScore} + '/' + ${totalMaxMarks}">-</td>
+                <td><button class="btn-edit" th:data-reg-id="${reg.id}" th:data-name="${reg.leaderName}" th:data-code="${reg.participantCode}" th:data-scores="${myScoresMap[reg.id].scoresData}" th:data-comments="${myScoresMap[reg.id].comments}" onclick="openEditModal(this)">Edit</button></td>
+            </tr>
+            <tr th:if="${evaluatedByMe.empty}"><td colspan="5" class="empty-row">No evaluations yet</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SECTION 3: EVALUATED BY OTHERS -->
+    <div class="section">
+        <div class="section-header others">👥 EVALUATED BY OTHERS</div>
+        <table class="participant-table">
+            <thead><tr><th>Code</th><th>Name</th><th>Team</th><th>Score</th><th>Judge</th></tr></thead>
+            <tbody>
+            <tr th:each="reg : ${evaluatedByOthers}">
+                <td class="code-cell" th:text="${reg.participantCode}">-</td>
+                <td th:text="${reg.leaderName}">-</td>
+                <td th:text="${reg.teamName != null ? reg.teamName : 'Solo'}">-</td>
+                <td class="score-cell" th:text="${scoreMap[reg.id].totalScore} + '/' + ${totalMaxMarks}">-</td>
+                <td th:text="'Judge: ' + ${judgeNameMap[reg.id]}">-</td>
+            </tr>
+            <tr th:if="${evaluatedByOthers.empty}"><td colspan="5" class="empty-row">No evaluations from other judges</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="evalModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3>Evaluate Participant</h3><button class="close-modal" onclick="closeModal()">&times;</button></div>
+        <form id="evalForm" action="/judge/save-score" method="post">
+            <input type="hidden" name="registrationId" id="regId">
+            <input type="hidden" name="eventId" th:value="${event.eventId}">
+            <div class="modal-body">
+                <div class="participant-info"><p><strong>Participant:</strong> <span id="participantName"></span></p><p><strong>Code:</strong> <span id="participantCode" class="code-cell"></span></p></div>
+                <div id="criteriaContainer"></div>
+                <div class="total-score">Total Score: <strong id="totalScore">0</strong> / <span th:text="${totalMaxMarks}">0</span></div>
+                <div class="form-group"><label>Comments</label><textarea name="comments" id="comments" rows="3" placeholder="Add feedback..."></textarea></div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button><button type="submit" class="btn-save">Save Evaluation</button></div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var criteriaData = [];
+    /*[# th:each="c : ${criteria}"]*/
+    criteriaData.push({
+        id: /*[[${c.id}]]*/,
+        criteriaName: /*[[${c.criteriaName}]]*/,
+        maxMarks: /*[[${c.maxMarks}]]*/,
+        description: /*[[${c.description}]]*/
+    });
+    /*[/]*/
+
+    let currentScoresData = {};
+
+    console.log("Criteria loaded:", criteriaData.length);
+
+    function openEvaluationModal(button) {
+        if (criteriaData.length === 0) {
+            alert("No evaluation criteria defined. Please contact administrator.");
+            return;
+        }
+        document.getElementById('regId').value = button.getAttribute('data-reg-id');
+        document.getElementById('participantName').innerText = button.getAttribute('data-name');
+        document.getElementById('participantCode').innerText = button.getAttribute('data-code');
+        document.getElementById('comments').value = '';
+        currentScoresData = {};
+        buildCriteriaForm();
+        document.getElementById('evalModal').style.display = 'flex';
+    }
+
+    function openEditModal(button) {
+        if (criteriaData.length === 0) {
+            alert("No evaluation criteria defined. Please contact administrator.");
+            return;
+        }
+        document.getElementById('regId').value = button.getAttribute('data-reg-id');
+        document.getElementById('participantName').innerText = button.getAttribute('data-name');
+        document.getElementById('participantCode').innerText = button.getAttribute('data-code');
+        document.getElementById('comments').value = button.getAttribute('data-comments') || '';
+        try {
+            currentScoresData = JSON.parse(button.getAttribute('data-scores') || '{}');
+        } catch(e) { currentScoresData = {}; }
+        buildCriteriaForm();
+        document.getElementById('evalModal').style.display = 'flex';
+    }
+
+    function buildCriteriaForm() {
+        let container = document.getElementById('criteriaContainer');
+        container.innerHTML = '';
+        criteriaData.forEach(c => {
+            let row = document.createElement('div');
+            row.className = 'criteria-row';
+            row.innerHTML = `<div class="criteria-label">${c.criteriaName} (Max: ${c.maxMarks})</div>
+                <input type="number" name="criteria_${c.id}" class="criteria-input" max="${c.maxMarks}" min="0" step="1" value="${currentScoresData[c.id] || ''}" onchange="calculateTotal()" onkeyup="calculateTotal()">
+                <small>${c.description || ''}</small>`;
+            container.appendChild(row);
+        });
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        criteriaData.forEach(c => {
+            let input = document.querySelector(`input[name="criteria_${c.id}"]`);
+            if (input && input.value) total += parseInt(input.value) || 0;
+        });
+        document.getElementById('totalScore').innerText = total;
+    }
+
+    function closeModal() { document.getElementById('evalModal').style.display = 'none'; }
+
+    document.getElementById('evalForm').onsubmit = function() {
+        for (let c of criteriaData) {
+            let input = document.querySelector(`input[name="criteria_${c.id}"]`);
+            if (!input || !input.value) { alert(`Please enter ${c.criteriaName} score`); return false; }
+            let val = parseInt(input.value);
+            if (val < 0 || val > c.maxMarks) { alert(`${c.criteriaName} score must be between 0 and ${c.maxMarks}`); return false; }
+        }
+        return true;
+    };
+
+    window.onclick = function(e) { if (e.target == document.getElementById('evalModal')) closeModal(); };
+    /*]]>*/
+</script>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>

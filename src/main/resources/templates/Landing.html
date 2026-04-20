@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TechFest 2025 — VIIT Baramati</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/launch.css"/>
+</head>
+<body>
+
+<!-- ═══════════ NAVBAR ═══════════ -->
+<header class="navbar" id="navbar">
+    <div class="nav-wrap">
+        <a href="/" class="logo">
+            <div class="logo-box">T</div>
+            <span>Tech<strong>Fest</strong> <em>2025</em></span>
+        </a>
+        <nav class="nav-links">
+            <a href="#events">Events</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#colleges">Colleges</a>
+        </nav>
+        <div class="nav-btns">
+            <a href="admin-login" class="btn-nav-outline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Admin
+            </a>
+            <!-- <a href="/judge/" class="btn-nav-fill">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Judge
+            </a> -->
+        </div>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#events">Events</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#colleges">Colleges</a>
+        <hr/>
+        <a href="admin-login.html">Admin Login</a>
+        <a href="/judge/login">Judge Login</a>
+    </div>
+</header>
+
+
+<!-- ═══════════ HERO BANNER ═══════════ -->
+<section class="hero">
+    <div class="hero-content">
+        <p class="hero-college">VIIT, Baramati</p>
+        <h1 class="hero-title">Tech<span>Fest</span> 2025</h1>
+        <p class="hero-tagline">COMPETE. INNOVATE. INSPIRE.</p>
+        <div class="hero-meta">
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M8 7V3M16 7V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        March 15–20, 2025
+      </span>
+            <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" stroke-width="2"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2"/></svg>
+        Main Campus, Bandra West
+      </span>
+            <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        500+ Students
+      </span>
+        </div>
+        <a href="#events" class="hero-cta">
+            View Open Events
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+    </div>
+</section>
+
+
+<!-- ═══════════ STATS STRIP ═══════════ -->
+<div class="stats-strip">
+    <div class="stats-inner">
+        <div class="stat-item">
+            <strong data-count="8">8</strong>
+            <span>Open Events</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+            <strong data-count="500">500</strong>
+            <span>Students Registered</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+            <strong data-count="12">12</strong>
+            <span>Colleges</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+            <strong data-count="24">24</strong>
+            <span>Events Hosted</span>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════ EVENTS ═══════════ -->
+<div class="events-grid">
+
+    <a th:each="event : ${events}"
+       th:href="@{/register/{id}(id=${event.eventId})}"
+       class="event-card">
+
+        <div class="ec-header ec-blue">
+            <span class="ec-cat" th:text="${event.category}">Category</span>
+            <span class="ec-date" th:text="${event.eventDate}">Date</span>
+        </div>
+
+        <div class="ec-body">
+            <div class="ec-emoji">🎯</div>
+
+            <h3 th:text="${event.eventName}">Event Name</h3>
+
+            <p th:text="${event.description}">
+                Event description
+            </p>
+
+            <div class="ec-meta-row">
+                <span>📍 <span th:text="${event.venue}"></span></span>
+                <span>👥 <span th:text="${event.participationType}"></span></span>
+            </div>
+        </div>
+
+        <div class="ec-footer">
+            <div>
+                <div class="ec-fee">
+                    ₹<span th:text="${event.fee}"></span>
+                </div>
+
+                <div class="ec-slots">
+                    Slots Available
+                </div>
+            </div>
+
+            <span class="ec-btn">Register →</span>
+        </div>
+
+        <div class="ec-bar">
+            <div class="ec-bar-fill" style="width:50%"></div>
+        </div>
+
+    </a>
+
+</div>
+
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section class="section section-bg" id="how-it-works">
+    <div class="section-wrap">
+        <div class="section-head">
+            <span class="eyebrow">Simple Process</span>
+            <h2>How It Works</h2>
+            <p>No account needed. Three steps from zero to competing.</p>
+        </div>
+
+        <div class="steps-grid">
+
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-icon blue-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                        <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Open the Form Link</h3>
+                <p>Admin shares a unique registration link for each event. Open it — no login, no signup, just the form.</p>
+            </div>
+
+            <div class="step-arrow">→</div>
+
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-icon orange-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>Fill Your Details</h3>
+                <p>Enter your name, email, college, and participation type. Pay the fee and upload the payment screenshot.</p>
+            </div>
+
+            <div class="step-arrow">→</div>
+
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-icon green-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>Get Code by Email</h3>
+                <p>After admin verifies your payment, your unique QR code and participant code is sent to your email instantly.</p>
+            </div>
+
+        </div>
+
+        <div class="how-note">
+            <span>🎯</span>
+            <span><strong>On Event Day</strong> — Show your code to the judge. They enter your marks. Results are published after the event.</span>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ═══════════ COLLEGES SCROLL STRIP ═══════════ -->
+<section class="section" id="colleges">
+    <div class="section-wrap">
+        <div class="section-head">
+            <span class="eyebrow">Participating Institutions</span>
+            <h2>Colleges on the Platform</h2>
+            <p>Students from these institutions have registered and competed through TechFest.</p>
+        </div>
+    </div>
+
+    <!-- Infinite scroll strip -->
+    <div class="colleges-scroll-outer">
+        <div class="colleges-scroll-track">
+            <!-- First set -->
+            <div class="college-item">
+                <div class="ci-logo blue-av">T</div>
+                <div class="ci-info"><div class="ci-name">VIIT Baramati</div><div class="ci-count">48 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo orange-av">V</div>
+                <div class="ci-info"><div class="ci-name">VIT Vellore</div><div class="ci-count">62 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo green-av">N</div>
+                <div class="ci-info"><div class="ci-name">NIT Trichy</div><div class="ci-count">35 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo purple-av">D</div>
+                <div class="ci-info"><div class="ci-name">DJSCE Baramati</div><div class="ci-count">29 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo red-av">S</div>
+                <div class="ci-info"><div class="ci-name">SPIT Baramati</div><div class="ci-count">41 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo teal-av">K</div>
+                <div class="ci-info"><div class="ci-name">KJSCE Baramati</div><div class="ci-count">33 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo indigo-av">F</div>
+                <div class="ci-info"><div class="ci-name">FCRIT Vashi</div><div class="ci-count">27 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo pink-av">P</div>
+                <div class="ci-info"><div class="ci-name">Pillai College</div><div class="ci-count">22 students</div></div>
+            </div>
+            <!-- Duplicate set for seamless loop -->
+            <div class="college-item">
+                <div class="ci-logo blue-av">T</div>
+                <div class="ci-info"><div class="ci-name">VIIT Baramati</div><div class="ci-count">48 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo orange-av">V</div>
+                <div class="ci-info"><div class="ci-name">VIT Vellore</div><div class="ci-count">62 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo green-av">N</div>
+                <div class="ci-info"><div class="ci-name">NIT Trichy</div><div class="ci-count">35 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo purple-av">D</div>
+                <div class="ci-info"><div class="ci-name">DJSCE Baramati</div><div class="ci-count">29 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo red-av">S</div>
+                <div class="ci-info"><div class="ci-name">SPIT Baramati</div><div class="ci-count">41 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo teal-av">K</div>
+                <div class="ci-info"><div class="ci-name">KJSCE Baramati</div><div class="ci-count">33 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo indigo-av">F</div>
+                <div class="ci-info"><div class="ci-name">FCRIT Vashi</div><div class="ci-count">27 students</div></div>
+            </div>
+            <div class="college-item">
+                <div class="ci-logo pink-av">P</div>
+                <div class="ci-info"><div class="ci-name">Pillai College</div><div class="ci-count">22 students</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>

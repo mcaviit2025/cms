@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Details - CMS Admin</title>
+    <link rel="stylesheet" href="/css/event-details.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">CMS Admin</div>
+    <div class="header-right">
+        <span>Admin</span>
+        <a href="/admin/logout">Logout</a>
+    </div>
+</div>
+
+<div class="navbar">
+    <div class="nav-center">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/add-event">Create Event</a>
+        <a href="/admin/registrations">Registrations</a>
+        <a href="/admin/send-email/0">Generate Code</a>
+        <a href="#">Results</a>
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- Back Button -->
+    <div class="back-nav">
+        <a href="/admin/dashboard" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <!-- Event Information Card -->
+    <div class="event-info-card">
+        <h2 th:text="${event.eventName}">Event Name</h2>
+        <div class="event-meta-grid">
+            <div class="meta-item">
+                <span class="meta-label">📅 Date</span>
+                <span class="meta-value" th:text="${event.eventDate}">2024-01-01</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">📍 Venue</span>
+                <span class="meta-value" th:text="${event.venue}">Venue Name</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">👥 Participation Type</span>
+                <span class="meta-value" th:text="${event.participationType}">Solo/Group</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">💰 Registration Fee</span>
+                <span class="meta-value">₹ <span th:text="${event.fee}">0</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+                <div class="stat-number" th:text="${totalParticipants}">0</div>
+                <div class="stat-label">Total Participants</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+                <div class="stat-number" th:text="${approvedParticipants}">0</div>
+                <div class="stat-label">Confirmed Participants</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+                <div class="stat-number">₹ <span th:text="${totalCollected}">0</span></div>
+                <div class="stat-label">Total Collected</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📧</div>
+            <div class="stat-info">
+                <div class="stat-number" th:text="${codeSentCount}">0</div>
+                <div class="stat-label">Codes Sent</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Participants Table -->
+    <div class="table-container">
+        <h3>Registered Participants</h3>
+
+        <table class="participant-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Participant Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>College</th>
+                <th>Team Name</th>
+                <th>Participant Code</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reg, stat : ${registrations}">
+                <td class="text-center" th:text="${stat.count}">1</td>
+                <td th:text="${reg.leaderName}">John Doe</td>
+                <td th:text="${reg.leaderEmail}">john@example.com</td>
+                <td th:text="${reg.phone}">9876543210</td>
+                <td th:text="${reg.college}">College Name</td>
+                <td th:text="${reg.teamName != null ? reg.teamName : '-'}">Team A</td>
+                <td class="code-cell" th:text="${reg.participantCode != null ? reg.participantCode : 'Not Generated'}">CODE123</td>
+                <td>
+                    <span th:if="${reg.status == 'APPROVED'}" class="status-badge approved">✓ Approved</span>
+                    <span th:if="${reg.status == 'PENDING'}" class="status-badge pending">⏳ Pending</span>
+                    <span th:if="${reg.status == 'REJECTED'}" class="status-badge rejected">✗ Rejected</span>
+                </td>
+            </tr>
+            <tr th:if="${registrations.isEmpty()}">
+                <td colspan="8" class="empty-row">No registered participants found for this event</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>

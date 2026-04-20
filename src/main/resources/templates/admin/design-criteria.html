@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Design Evaluation Criteria - CMS Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 0 30px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1D4ED8;
+        }
+
+        .header-right a {
+            color: #DC2626;
+            text-decoration: none;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .nav-center {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+        }
+
+        .nav-center a {
+            padding: 12px 18px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-center a:hover {
+            color: #1D4ED8;
+        }
+
+        .nav-center a.active {
+            color: #1D4ED8;
+            border-bottom-color: #1D4ED8;
+        }
+
+        .main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            border-left: 4px solid #1D4ED8;
+            padding-left: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #1D4ED8;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #1E40AF;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">CMS Admin</div>
+    <div class="header-right">
+        <span>Admin</span>
+        <a href="/admin/logout">Logout</a>
+    </div>
+</div>
+
+<div class="navbar">
+    <div class="nav-center">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/add-event">Create Event</a>
+        <a href="/admin/events">Events</a>
+        <a href="/admin/design-criteria" class="active">Evaluation Criteria</a>
+        <a href="/admin/registrations">Registrations</a>
+        <a href="/admin/judges">Manage Judges</a>
+    </div>
+</div>
+
+<div class="main">
+    <h2>Design Evaluation Criteria</h2>
+
+    <div class="card">
+        <div class="form-group">
+            <label>Select Event</label>
+            <select id="eventSelect" onchange="if(this.value) window.location='/admin/design-criteria/'+this.value">
+                <option value="">-- Select Event --</option>
+                <option th:each="event : ${events}" th:value="${event.eventId}" th:text="${event.eventName}"></option>
+            </select>
+        </div>
+    </div>
+</div>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>

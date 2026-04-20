@@ -1,0 +1,485 @@
+/*
+ * admin-layout.css — Admin Dashboard & Payments Styling
+ * Consistent with TechFest 2025 launch.css theme
+ */
+
+/* ── Reset & Base ─────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+    background: #F7F6F2;
+    color: #111118;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Tokens (matching launch.css) ────────────────── */
+:root {
+    --white:   #FFFFFF;
+    --bg:      #F7F6F2;
+    --border:  #E5E2D9;
+    --border2: #D0CCBF;
+    --t1:      #111118;
+    --t2:      #55525F;
+    --t3:      #9490A2;
+    --amber:   #D97706;
+    --amber-y: #FCD34D;
+    --blue:    #1D4ED8;
+    --blue-bg: #EFF6FF;
+    --blue-bd: #BFDBFE;
+    --green:   #059669;
+    --green-bg:#ECFDF5;
+    --green-bd:#A7F3D0;
+    --purple:  #7C3AED;
+    --purp-bg: #F5F3FF;
+    --purp-bd: #DDD6FE;
+    --orange:  #EA580C;
+    --org-bg:  #FFF7ED;
+    --org-bd:  #FED7AA;
+    --red:     #DC2626;
+    --font-h:  'Playfair Display', Georgia, serif;
+    --font-b:  'Manrope', system-ui, sans-serif;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
+}
+
+/* ── Import Fonts ─────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+/* ── HEADER ──────────────────────────────────── */
+.header {
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.logo {
+    font-family: var(--font-h);
+    font-size: 20px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--t1) 0%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.3px;
+}
+
+/* ── NAVBAR ──────────────────────────────────── */
+.navbar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 62px;
+    z-index: 899;
+}
+
+.nav-center {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.nav-center a {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--t2);
+    padding: 12px 18px;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-center a:hover {
+    color: var(--t1);
+    background: var(--bg);
+}
+
+.nav-center a.active {
+    color: var(--blue);
+    border-bottom-color: var(--blue);
+}
+
+/* ── MAIN CONTENT ─────────────────────────────── */
+.main {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 48px 24px;
+    min-height: calc(100vh - 140px);
+}
+
+.main h2 {
+    font-family: var(--font-h);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--t1);
+    margin-bottom: 32px;
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
+}
+
+.main h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    border-radius: 2px;
+}
+
+/* ── SELECT DROPDOWN ─────────────────────────── */
+select {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 16px;
+    margin-bottom: 32px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: var(--font-b);
+    font-weight: 500;
+    color: var(--t1);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2355525F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+select:hover {
+    border-color: var(--border2);
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(29,78,216,0.1);
+}
+
+/* ── REGISTRATION TABLE ───────────────────────── */
+.reg-table {
+    width: 100%;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.reg-table thead {
+    background: linear-gradient(135deg, var(--bg) 0%, white 100%);
+    border-bottom: 1px solid var(--border);
+}
+
+.reg-table th {
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--t2);
+    border-bottom: 1px solid var(--border);
+}
+
+.reg-table td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--t1);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.reg-table tbody tr:hover {
+    background: var(--bg);
+    transition: background 0.2s;
+}
+
+.reg-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ── STATUS BADGES ───────────────────────────── */
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.status.pending {
+    background: #FEF3C7;
+    color: #D97706;
+    border: 1px solid #FDE68A;
+}
+
+.status.approved {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green-bd);
+}
+
+.status.rejected {
+    background: #FEE2E2;
+    color: var(--red);
+    border: 1px solid #FECACA;
+}
+
+/* ── BUTTONS & LINKS ─────────────────────────── */
+.view-btn {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--blue);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.view-btn:hover {
+    background: var(--purple);
+    transform: translateY(-1px);
+}
+
+.btn {
+    display: inline-block;
+    padding: 6px 14px;
+    margin: 0 4px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn.approve {
+    background: var(--green);
+    color: white;
+}
+
+.btn.approve:hover {
+    background: #047857;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(5,150,105,0.3);
+}
+
+.btn.reject {
+    background: var(--red);
+    color: white;
+}
+
+.btn.reject:hover {
+    background: #B91C1C;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(220,38,38,0.3);
+}
+
+/* ── ACTION CELL STYLES ──────────────────────── */
+.reg-table td:last-child span {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ── RESPONSIVE DESIGN ───────────────────────── */
+@media (max-width: 860px) {
+    .header {
+        padding: 0 20px;
+    }
+
+    .main {
+        padding: 32px 20px;
+    }
+
+    .main h2 {
+        font-size: 24px;
+    }
+
+    .reg-table th,
+    .reg-table td {
+        padding: 12px 16px;
+    }
+
+    select {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .reg-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .reg-table th,
+    .reg-table td {
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+
+    .btn {
+        padding: 5px 10px;
+        font-size: 11px;
+        margin: 2px;
+    }
+
+    .view-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 580px) {
+    .header {
+        padding: 0 16px;
+        height: 56px;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .navbar {
+        top: 56px;
+    }
+
+    .nav-center {
+        padding: 0 16px;
+    }
+
+    .nav-center a {
+        font-size: 13px;
+        padding: 10px 14px;
+    }
+
+    .main {
+        padding: 24px 16px;
+    }
+
+    .main h2 {
+        font-size: 22px;
+        margin-bottom: 24px;
+    }
+
+    .main h2::after {
+        width: 40px;
+        bottom: -6px;
+    }
+
+    .reg-table th,
+    .reg-table td {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .status {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+
+    .btn, .view-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+}
+
+/* ── SCROLLBAR STYLING ───────────────────────── */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--t3);
+}
+
+/* ── EMPTY STATE ─────────────────────────────── */
+.reg-table tbody tr:only-child td {
+    text-align: center;
+    padding: 40px;
+    color: var(--t3);
+}
+
+/* ── TOOLTIP STYLES (optional) ───────────────── */
+.btn, .view-btn {
+    position: relative;
+}
+
+/* ── ANIMATIONS ──────────────────────────────── */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reg-table tbody tr {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+/* ── PRINT STYLES (optional) ─────────────────── */
+@media print {
+    .navbar, .header, select, .btn, .view-btn {
+        display: none;
+    }
+
+    .main {
+        padding: 0;
+        margin: 0;
+    }
+
+    .reg-table {
+        border: 1px solid #000;
+    }
+}

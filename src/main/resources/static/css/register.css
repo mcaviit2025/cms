@@ -1,0 +1,506 @@
+/*
+ * register.css — Event Registration Page Styling
+ * Consistent with TechFest 2025 launch.css theme
+ */
+
+/* ── Reset & Base ─────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+    background: #F7F6F2;
+    color: #111118;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Tokens (matching launch.css) ────────────────── */
+:root {
+    --white:   #FFFFFF;
+    --bg:      #F7F6F2;
+    --border:  #E5E2D9;
+    --border2: #D0CCBF;
+    --t1:      #111118;
+    --t2:      #55525F;
+    --t3:      #9490A2;
+    --amber:   #D97706;
+    --amber-y: #FCD34D;
+    --blue:    #1D4ED8;
+    --blue-bg: #EFF6FF;
+    --blue-bd: #BFDBFE;
+    --green:   #059669;
+    --green-bg:#ECFDF5;
+    --green-bd:#A7F3D0;
+    --purple:  #7C3AED;
+    --purp-bg: #F5F3FF;
+    --purp-bd: #DDD6FE;
+    --orange:  #EA580C;
+    --org-bg:  #FFF7ED;
+    --org-bd:  #FED7AA;
+    --red:     #DC2626;
+    --font-h:  'Playfair Display', Georgia, serif;
+    --font-b:  'Manrope', system-ui, sans-serif;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
+}
+
+/* ── Import Fonts ─────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+/* ── HEADER (matching admin dashboard) ─────────── */
+.header {
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.logo {
+    font-family: var(--font-h);
+    font-size: 20px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--t1) 0%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.3px;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--t2);
+    letter-spacing: 0.5px;
+}
+
+.home-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    background: var(--blue);
+    padding: 6px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.home-btn:hover {
+    background: var(--purple);
+    transform: translateY(-1px);
+}
+
+/* ── ALERT MESSAGES ───────────────────────────── */
+.alert {
+    max-width: 900px;
+    margin: 20px auto 0;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert.success {
+    background: var(--green-bg);
+    border-left: 3px solid var(--green);
+    color: var(--green);
+}
+
+.alert.error {
+    background: #FEE2E2;
+    border-left: 3px solid var(--red);
+    color: #991B1B;
+}
+
+/* ── MAIN CONTAINER ───────────────────────────── */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px;
+}
+
+/* ── EVENT CARD ───────────────────────────────── */
+.event-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s;
+}
+
+.event-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.event-card h2 {
+    font-family: var(--font-h);
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--t1);
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+}
+
+.event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    row-gap: 12px;
+}
+
+.event-meta span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--t2);
+    background: var(--bg);
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.event-meta span span {
+    background: none;
+    padding: 0;
+    color: var(--t1);
+    font-weight: 600;
+}
+
+/* ── FORM CARDS ───────────────────────────────── */
+.card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card h3 {
+    font-family: var(--font-h);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--t1);
+    margin-bottom: 20px;
+    letter-spacing: -0.2px;
+}
+
+/* ── FORM ELEMENTS ───────────────────────────── */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: var(--font-b);
+    transition: all 0.2s;
+    background: white;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(29,78,216,0.1);
+}
+
+label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--t1);
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+input[type="radio"] {
+    width: auto;
+    margin-right: 4px;
+    accent-color: var(--blue);
+}
+
+.note {
+    font-size: 12px;
+    color: var(--t3);
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+/* ── TEAM SECTION ─────────────────────────────── */
+#teamSection {
+    transition: all 0.3s ease;
+}
+
+#membersContainer {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#membersContainer input {
+    margin-bottom: 8px;
+}
+
+/* ── SUBMIT BUTTON ────────────────────────────── */
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: var(--font-b);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 16px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(29,78,216,0.3);
+}
+
+/* ── RESPONSIVE DESIGN ───────────────────────── */
+@media (max-width: 768px) {
+    .header {
+        padding: 0 20px;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .title {
+        font-size: 14px;
+    }
+
+    .home-btn {
+        font-size: 12px;
+        padding: 5px 12px;
+    }
+
+    .container {
+        padding: 32px 20px;
+    }
+
+    .event-card {
+        padding: 20px;
+    }
+
+    .event-card h2 {
+        font-size: 22px;
+    }
+
+    .event-meta {
+        gap: 10px;
+    }
+
+    .event-meta span {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .card h3 {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .alert {
+        margin: 16px 20px 0;
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 580px) {
+    .header {
+        padding: 0 16px;
+        height: 56px;
+    }
+
+    .logo {
+        font-size: 16px;
+    }
+
+    .title {
+        font-size: 12px;
+    }
+
+    .home-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+
+    .container {
+        padding: 24px 16px;
+    }
+
+    .event-card {
+        padding: 16px;
+    }
+
+    .event-card h2 {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .event-meta span {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .card {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    .card h3 {
+        font-size: 17px;
+        margin-bottom: 14px;
+    }
+
+    input, select, textarea {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    label {
+        font-size: 13px;
+    }
+
+    .submit-btn {
+        padding: 14px;
+        font-size: 15px;
+        margin-top: 12px;
+    }
+
+    .alert {
+        margin: 12px 16px 0;
+        padding: 10px 14px;
+        font-size: 12px;
+    }
+}
+
+/* ── SCROLLBAR STYLING ───────────────────────── */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--t3);
+}
+
+/* ── FILE INPUT STYLING ───────────────────────── */
+input[type="file"] {
+    padding: 10px;
+    background: var(--bg);
+    cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    padding: 8px 16px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-right: 12px;
+    transition: background 0.2s;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+    background: var(--purple);
+}
+
+/* ── NUMBER INPUT SPINNER STYLE ───────────────── */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    opacity: 0.5;
+}
+
+/* ── PLACEHOLDER STYLING ─────────────────────── */
+::placeholder {
+    color: var(--t3);
+    opacity: 0.7;
+}
+
+/* ── FOCUS VISIBLE FOR ACCESSIBILITY ─────────── */
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(29,78,216,0.1);
+}
+
+/* ── RADIO BUTTON GROUP ───────────────────────── */
+#typeSelector label {
+    display: inline-flex;
+    margin-right: 24px;
+    margin-bottom: 0;
+}
+
+#typeSelector {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ── MEMBERS CONTAINER ───────────────────────── */
+#membersContainer input:first-child {
+    margin-top: 8px;
+}

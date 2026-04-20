@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Assign Judge to Event - CMS Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 0 30px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1D4ED8;
+        }
+
+        .header-right a {
+            color: #DC2626;
+            text-decoration: none;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .nav-center {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+        }
+
+        .nav-center a {
+            padding: 12px 18px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-center a:hover {
+            color: #1D4ED8;
+            background: #f5f5f5;
+        }
+
+        .nav-center a.active {
+            color: #1D4ED8;
+            border-bottom-color: #1D4ED8;
+        }
+
+        .main {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .main h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1D4ED8;
+            padding-left: 15px;
+        }
+
+        .form-card, .table-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-card h3, .table-card h3 {
+            margin-bottom: 20px;
+            color: #1D4ED8;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            padding: 12px 24px;
+            background: #1D4ED8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 28px;
+        }
+
+        .btn-submit:hover {
+            background: #1E40AF;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px;
+            background: #F8F9FA;
+            font-weight: 700;
+            font-size: 13px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .judge-tag {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #EFF6FF;
+            color: #1D4ED8;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 3px;
+        }
+
+        .remove-link {
+            color: #DC2626;
+            text-decoration: none;
+            font-size: 12px;
+            padding: 4px 8px;
+            background: #FEE2E2;
+            border-radius: 4px;
+        }
+
+        .remove-link:hover {
+            background: #DC2626;
+            color: white;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert.success {
+            background: #D1FAE5;
+            color: #065F46;
+            border-left: 3px solid #059669;
+        }
+
+        .alert.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border-left: 3px solid #DC2626;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            .btn-submit {
+                width: 100%;
+            }
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">CMS Admin</div>
+    <div class="header-right">
+        <span>Admin</span>
+        <a href="/admin/logout">Logout</a>
+    </div>
+</div>
+
+<div class="navbar">
+    <div class="nav-center">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/admin/add-event">Create Event</a>
+        <a href="/admin/events">Events</a>
+        <a href="/admin/registrations">Registrations</a>
+        <a href="/admin/judges">Manage Judges</a>
+        <a href="/admin/assign-judge" class="active">Assign Judge</a>
+        <a href="/admin/send-email/0">Generate Code</a>
+        <a href="#">Results</a>
+    </div>
+</div>
+
+<div class="main">
+    <h2>Assign Judge to Event</h2>
+
+    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+    <!-- ASSIGN FORM -->
+    <div class="form-card">
+        <h3>➕ New Assignment</h3>
+        <form action="/admin/assign-judge" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Select Event *</label>
+                    <select name="eventId" required>
+                        <option value="">-- Select Event --</option>
+                        <option th:each="event : ${events}" th:value="${event.eventId}" th:text="${event.eventName}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Judge *</label>
+                    <select name="judgeId" required>
+                        <option value="">-- Select Judge --</option>
+                        <option th:each="judge : ${judges}" th:value="${judge.id}" th:text="${judge.fullName + ' (' + judge.username + ')'}"></option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Assign Judge</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ASSIGNED JUDGES LIST -->
+    <div class="table-card">
+        <h3>📋 Assigned Judges by Event</h3>
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Assigned Judges</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${eventsWithAssignments}">
+                <td><strong th:text="${event.eventName}">Event Name</strong></td>
+                <td>
+                    <div th:if="${event.assignedJudges != null and !event.assignedJudges.empty}">
+                            <span th:each="judge : ${event.assignedJudges}" class="judge-tag">
+                                <span th:text="${judge.fullName}"></span>
+                                <span th:text="' (' + ${judge.username} + ')'"></span>
+                            </span>
+                    </div>
+                    <span th:if="${event.assignedJudges == null or event.assignedJudges.empty}"
+                          style="color: #999; font-style: italic;">No judges assigned</span>
+                </td>
+                <td>
+                    <a th:each="judge : ${event.assignedJudges}"
+                       th:href="@{/admin/remove-judge/{eventId}/{judgeId}(eventId=${event.eventId}, judgeId=${judge.id})}"
+                       class="remove-link"
+                       onclick="return confirm('Remove ' + '${judge.fullName}' + ' from ' + '${event.eventName}' + '?')">
+                        Remove
+                    </a>
+                    <span th:if="${event.assignedJudges == null or event.assignedJudges.empty}">-</span>
+                </td>
+            </tr>
+            <tr th:if="${eventsWithAssignments == null or eventsWithAssignments.empty}">
+                <td colspan="3" style="text-align: center; padding: 40px; color: #999;">
+                    No events found
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer style="background: #0A0A10; color: rgba(255,255,255,0.4); text-align: center; padding: 25px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 48px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <p style="margin-bottom: 8px;">
+            Designed & Developed with <span style="color: #DC2626;"></span> by
+            <strong style="color: #DAA520; font-weight: 600;">Sumit Dipak Thakare</strong>
+        </p>
+        <p style="font-size: 11px;">© 2025 TechFest 2025 | Vidya Pratishthan's Institute of Information Technology, Baramati</p>
+    </div>
+</footer>
+</body>
+</html>
