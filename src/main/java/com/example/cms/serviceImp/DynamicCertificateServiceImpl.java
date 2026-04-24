@@ -1,4 +1,4 @@
-package com.example.cms.serviceimpl;
+package com.example.cms.serviceImp;
 
 import com.example.cms.entity.Event;
 import com.example.cms.entity.Registration;
@@ -20,41 +20,27 @@ public class DynamicCertificateServiceImpl implements DynamicCertificateService 
     public byte[] generateCertificatePdf(Registration registration, Event event, String memberName) {
         try {
             String html = generateCertificateHtml(registration, event, memberName);
-            return convertHtmlToPdf(html);
+            byte[] pdf = convertHtmlToPdf(html);
+
+            if (pdf == null || pdf.length == 0) {
+                throw new RuntimeException("PDF content is empty");
+            }
+            return pdf;
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to generate certificate PDF: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to generate PDF: " + e.getMessage());
         }
     }
 
     @Override
     public String generateCertificateHtml(Registration registration, Event event, String memberName) {
         String template = getTemplate();
+        String certificateId = "TF-" + event.getEventId() + "-" + registration.getId();
 
-        // Format date
-        String formattedDate = "TBD";
-        if (event.getEventDate() != null && !event.getEventDate().isEmpty()) {
-            formattedDate = event.getEventDate();
-        }
-
-        // Generate unique certificate ID
-        String certificateId = "TF-" + event.getEventId() + "-" + registration.getId() + "-" + UUID.randomUUID().toString().substring(0, 5).toUpperCase();
-
-        // Handle team name
-        String teamName = "";
-        if (registration.getTeamName() != null && !registration.getTeamName().isEmpty()) {
-            teamName = registration.getTeamName();
-        }
-
-        // Replace all placeholders
-        String html = template
+        return template
                 .replace("{{studentName}}", memberName)
                 .replace("{{eventName}}", event.getEventName())
-                .replace("{{eventDate}}", formattedDate)
-                .replace("{{certificateId}}", certificateId)
-                .replace("{{teamName}}", teamName);
-
-        return html;
+                .replace("{{eventDate}}", event.getEventDate() != null ? event.getEventDate() : "")
+                .replace("{{certificateId}}", certificateId);
     }
 
     private String getTemplate() {
@@ -62,10 +48,8 @@ public class DynamicCertificateServiceImpl implements DynamicCertificateService 
             try {
                 ClassPathResource resource = new ClassPathResource("templates/certificates/certificate-template.html");
                 templateCache = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-                System.out.println("✅ Certificate template loaded successfully");
             } catch (Exception e) {
-                System.err.println("❌ Failed to load certificate template: " + e.getMessage());
-                throw new RuntimeException("Failed to load certificate template", e);
+                throw new RuntimeException("Could not load HTML template", e);
             }
         }
         return templateCache;
@@ -77,7 +61,6 @@ public class DynamicCertificateServiceImpl implements DynamicCertificateService 
             renderer.setDocumentFromString(html);
             renderer.layout();
             renderer.createPDF(outputStream);
-            System.out.println("✅ PDF generated successfully, size: " + outputStream.size() + " bytes");
             return outputStream.toByteArray();
         }
     }

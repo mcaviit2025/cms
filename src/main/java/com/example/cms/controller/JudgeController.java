@@ -11,6 +11,7 @@ import com.example.cms.repository.EvaluationCriteriaRepository;
 import com.example.cms.repository.JudgeRepository;
 import com.example.cms.repository.RegistrationRepository;
 import com.example.cms.repository.ScoreRepository;
+import com.example.cms.service.CertificateEmailService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -266,6 +267,7 @@ public class JudgeController {
         return "judge/event-participants";
     }
 
+
     @PostMapping("/judge/save-score")
     public String saveScore(@RequestParam Map<String, String> allParams,
                             HttpSession session,
@@ -274,7 +276,7 @@ public class JudgeController {
             Integer judgeId = (Integer) session.getAttribute("judgeId");
 
             if (judgeId == null) {
-                redirectAttributes.addFlashAttribute("error", "Session expired. Please login again.");
+                redirectAttributes.addFlashAttribute("error", "Session expired");
                 return "redirect:/judge/login";
             }
 
@@ -305,9 +307,12 @@ public class JudgeController {
             }
 
             if (registrationId == null || eventId == null) {
-                redirectAttributes.addFlashAttribute("error", "Missing registration or event information");
+                redirectAttributes.addFlashAttribute("error", "Missing information");
                 return "redirect:/judge/dashboard";
             }
+
+            // Get registration to update emailStatus
+            Registration registration = registrationRepository.findById(registrationId).orElse(null);
 
             // Calculate total score
             int totalScore = 0;
@@ -327,7 +332,7 @@ public class JudgeController {
             scoresJson.append("}");
             String scoresData = scoresJson.toString();
 
-            // Check if score already exists
+            // Check if score exists
             Optional<Score> existingScore = scoreRepository.findByRegistrationIdAndJudgeId(registrationId, judgeId);
 
             Score score;
@@ -336,7 +341,6 @@ public class JudgeController {
                 score.setTotalScore(totalScore);
                 score.setScoresData(scoresData);
                 score.setComments(comments);
-                System.out.println("Updated score for registration: " + registrationId);
             } else {
                 score = new Score();
                 score.setRegistrationId(registrationId);
@@ -346,11 +350,19 @@ public class JudgeController {
                 score.setScoresData(scoresData);
                 score.setComments(comments);
                 score.setIsFinalized(false);
-                System.out.println("Created new score for registration: " + registrationId);
             }
 
             scoreRepository.save(score);
-            System.out.println("Score saved successfully!");
+
+            // ========== UPDATE EMAIL STATUS TO READY (So participant appears in certificate page) ==========
+            if (registration != null) {
+                // Only update if not already SENT
+                if (registration.getEmailStatus() == null || !registration.getEmailStatus().equals("SENT")) {
+                    registration.setEmailStatus("READY");
+                    registrationRepository.save(registration);
+                    System.out.println("✅ Email status updated to READY for registration: " + registrationId);
+                }
+            }
 
             redirectAttributes.addFlashAttribute("success", "Evaluation saved successfully!");
 

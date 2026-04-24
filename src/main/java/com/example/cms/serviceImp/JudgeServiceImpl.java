@@ -1,4 +1,4 @@
-package com.example.cms.serviceimpl;
+package com.example.cms.serviceImp;
 
 import com.example.cms.dto.AssignJudgeDTO;
 import com.example.cms.dto.JudgeDTO;
