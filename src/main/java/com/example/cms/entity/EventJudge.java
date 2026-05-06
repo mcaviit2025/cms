@@ -1,6 +1,8 @@
 package com.example.cms.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,6 +19,18 @@ public class EventJudge {
     @Column(name = "judge_id")
     private Integer judgeId;
 
+    // ✅ @OnDelete CASCADE → deleting an event deletes its event_judge rows at DB level
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", insertable = false, updatable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Event event;
+
+    // ✅ @OnDelete CASCADE → deleting a judge deletes its event_judge rows at DB level
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "judge_id", insertable = false, updatable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Judge judge;
+
     @Column(name = "assigned_at")
     private LocalDateTime assignedAt;
 
@@ -25,7 +39,6 @@ public class EventJudge {
         assignedAt = LocalDateTime.now();
     }
 
-    // Constructors
     public EventJudge() {}
 
     public EventJudge(Integer eventId, Integer judgeId) {
@@ -33,7 +46,6 @@ public class EventJudge {
         this.judgeId = judgeId;
     }
 
-    // Getters and Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -45,4 +57,16 @@ public class EventJudge {
 
     public LocalDateTime getAssignedAt() { return assignedAt; }
     public void setAssignedAt(LocalDateTime assignedAt) { this.assignedAt = assignedAt; }
+
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) {
+        this.event = event;
+        if (event != null) this.eventId = event.getEventId();
+    }
+
+    public Judge getJudge() { return judge; }
+    public void setJudge(Judge judge) {
+        this.judge = judge;
+        if (judge != null) this.judgeId = judge.getId();
+    }
 }

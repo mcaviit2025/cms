@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Management | TechFest 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Manrope', sans-serif; background: #F7F6F2; color: #111118; }
+
+        .header {
+            background: rgba(255,255,255,.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #E5E2D9;
+            padding: 0 32px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo-text span { color: #D97706; background: none; }
+
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .admin-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #F7F6F2;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .admin-name span {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .logout-btn {
+            background: #DC2626;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .logout-btn:hover { background: #B91C1C; }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #E5E2D9;
+            position: sticky;
+            top: 70px;
+            z-index: 999;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+        .nav-link {
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #55525F;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover { color: #1D4ED8; background: #F7F6F2; }
+        .nav-link.active { color: #1D4ED8; border-bottom-color: #1D4ED8; }
+
+        .main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 800;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(29,78,216,0.3); }
+
+        .search-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            border: 1px solid #E5E2D9;
+            display: flex;
+            gap: 12px;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #E5E2D9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .search-bar button {
+            padding: 10px 24px;
+            background: #1D4ED8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .events-table {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #E5E2D9;
+            overflow: hidden;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .events-table th {
+            text-align: left;
+            padding: 14px 16px;
+            background: #F8F9FA;
+            font-weight: 700;
+            font-size: 13px;
+            color: #55525F;
+            border-bottom: 1px solid #E5E2D9;
+        }
+        .events-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #E5E2D9;
+            font-size: 14px;
+        }
+        .events-table tr:hover { background: #F7F6F2; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-active { background: #D1FAE5; color: #059669; }
+        .status-inactive { background: #FEE2E2; color: #DC2626; }
+
+        .action-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .action-icon {
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            text-decoration: none;
+            background: none;
+            border: none;
+        }
+        .action-icon.edit { color: #1D4ED8; }
+        .action-icon.delete { color: #DC2626; }
+        .action-icon.report { color: #D97706; }
+        .action-icon.download { color: #10B981; }
+        .action-icon:hover { transform: scale(1.1); }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert.success { background: #D1FAE5; color: #065F46; border-left: 3px solid #059669; }
+        .alert.error { background: #FEE2E2; color: #991B1B; border-left: 3px solid #DC2626; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #E5E2D9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+        .modal-header h3 { font-size: 20px; }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #E5E2D9;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .btn-confirm { background: #DC2626; color: white; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-cancel { background: #9CA3AF; color: white; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-secondary { background: #1D4ED8; color: white; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-success { background: #10B981; color: white; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .footer {
+            background: #0A0A10;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            margin-top: 48px;
+        }
+
+        @media (max-width: 768px) {
+            .events-table { display: block; overflow-x: auto; }
+            .action-icons { flex-direction: column; gap: 5px; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .checkbox-group { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">
+        <div class="logo-icon">TF</div>
+        <div class="logo-text">Tech<span>Fest</span> 2025</div>
+    </div>
+    <div class="header-right">
+        <div class="admin-name"><span>A</span> Admin</div>
+        <a href="/admin/logout" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<div class="navbar">
+    <div class="nav-container">
+        <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/events" class="nav-link active">Events</a>
+        <a href="/admin/registrations" class="nav-link">Registrations</a>
+        <a href="/admin/judges" class="nav-link">Manage Judges</a>
+        <a href="/admin/assign-judge" class="nav-link">Assign Judge</a>
+        <a href="/admin/design-criteria" class="nav-link">Design Criteria</a>
+        <a href="/admin/certificates" class="nav-link">Certificates</a>
+        <a href="/judge/login" class="nav-link" target="_blank">Judge Login</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="page-header">
+        <h1>🎯 Event Management</h1>
+        <a href="/admin/events/create" class="btn-primary">+ Create New Event</a>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by event name..." onkeyup="searchEvents()">
+        <button onclick="searchEvents()">🔍 Search</button>
+    </div>
+
+    <table class="events-table" id="eventsTable">
+        <thead>
+        <tr>
+            <th>Event Name</th>
+            <th>Date</th>
+            <th>Venue</th>
+            <th>Type</th>
+            <th>Fee</th>
+            <th>Participants</th>
+            <th>Collected</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="eventsTableBody">
+        <tr th:each="event : ${events}">
+            <td th:text="${event.eventName}">Business Mind</td>
+            <td th:text="${event.eventDate}">2026-05-15</td>
+            <td th:text="${event.venue}">VIIT Baramati</td>
+            <td th:text="${event.participationType}">Group</td>
+            <td>₹<span th:text="${event.fee}">100</span></td>
+            <td th:text="${event.totalParticipants}">0</td>
+            <td>₹<span th:text="${event.totalCollected}">0</span></td>
+            <td>
+                <span th:if="${event.active}" class="status-badge status-active">Active</span>
+                <span th:if="${!event.active}" class="status-badge status-inactive">Inactive</span>
+            </td>
+            <td class="action-icons">
+                <a th:href="@{/admin/events/edit/{id}(id=${event.eventId})}" class="action-icon edit">✏️</a>
+                <button class="action-icon delete" th:data-id="${event.eventId}" th:data-name="${event.eventName}" th:data-participants="${event.totalParticipants}" onclick="showDeleteModal(this)">🗑️</button>
+                <button class="action-icon report" th:data-id="${event.eventId}" onclick="viewReport(this)">📊</button>
+                <button class="action-icon download" th:data-id="${event.eventId}" th:data-name="${event.eventName}" onclick="showExportModal(this)">📥</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Export Modal -->
+<div id="exportModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📥 Export Participants</h3>
+            <button class="close-modal" onclick="closeModal('exportModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>File Format</label>
+                <select id="exportFormat">
+                    <option value="EXCEL">Excel (.xlsx)</option>
+                    <option value="CSV">CSV (.csv)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Participant Status</label>
+                <select id="exportStatus">
+                    <option value="ALL">All Participants</option>
+                    <option value="APPROVED">Approved Only</option>
+                    <option value="PENDING">Pending Only</option>
+                    <option value="REJECTED">Rejected Only</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Include Scores</label>
+                <select id="exportIncludeScores">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Select Fields to Export</label>
+                <div class="checkbox-group" id="exportFields">
+                    <label><input type="checkbox" value="leaderName" checked> Leader Name</label>
+                    <label><input type="checkbox" value="leaderEmail" checked> Leader Email</label>
+                    <label><input type="checkbox" value="phone"> Phone</label>
+                    <label><input type="checkbox" value="college"> College</label>
+                    <label><input type="checkbox" value="teamName"> Team Name</label>
+                    <label><input type="checkbox" value="memberNames"> Member Names</label>
+                    <label><input type="checkbox" value="memberEmails"> Member Emails</label>
+                    <label><input type="checkbox" value="status" checked> Status</label>
+                    <label><input type="checkbox" value="utrNumber"> UTR Number</label>
+                    <label><input type="checkbox" value="amount" checked> Amount Paid</label>
+                    <label><input type="checkbox" value="paymentStatus" checked> Payment Status</label>
+                    <label><input type="checkbox" value="totalScore" checked> Total Score</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('exportModal')">Cancel</button>
+            <button class="btn-success" onclick="confirmExport()">Download Export</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal with Auto-Backup -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>⚠️ Delete Event</h3>
+            <button class="close-modal" onclick="closeModal('deleteModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="deleteMessage"></p>
+            <div style="margin: 15px 0;">
+                <label>Backup File Format:</label>
+                <select id="backupFormat" style="width:100%; padding:8px; margin-top:5px; border-radius:6px;">
+                    <option value="EXCEL">Excel (.xlsx)</option>
+                    <option value="CSV">CSV (.csv)</option>
+                </select>
+            </div>
+            <div>
+                <label>Include Scores in Backup:</label>
+                <select id="backupIncludeScores" style="width:100%; padding:8px; margin-top:5px; border-radius:6px;">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <div style="margin-top: 15px;">
+                <label>Type "DELETE" to confirm:</label>
+                <input type="text" id="deleteConfirm" placeholder="DELETE" style="width:100%; padding:8px; margin-top:5px; border-radius:6px; border:1px solid #ddd;">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('deleteModal')">Cancel</button>
+            <button class="btn-confirm" onclick="confirmDelete()">Download Backup & Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div id="reportModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3>📊 Event Report</h3>
+            <button class="close-modal" onclick="closeModal('reportModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="reportContent">
+            Loading...
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('reportModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    Designed & Developed with ❤ by <strong style="color: #DAA520;">Sumit Dipak Thakare</strong>
+    <br>
+    <small>© 2025 TechFest 2025 | VIIT Baramati</small>
+</footer>
+
+<script>
+    let currentEventId = null;
+    let currentEventName = null;
+    let currentEventParticipants = 0;
+    let currentEventCollected = 0;
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `<div class="alert ${type}">${message}</div>`;
+        setTimeout(() => {
+            alertContainer.innerHTML = '';
+        }, 4000);
+    }
+
+    // ========== EXPORT MODAL ==========
+    let exportEventId = null;
+    let exportEventName = null;
+
+    function showExportModal(button) {
+        exportEventId = button.getAttribute('data-id');
+        exportEventName = button.getAttribute('data-name');
+        document.getElementById('exportModal').style.display = 'flex';
+    }
+
+    async function confirmExport() {
+        const format = document.getElementById('exportFormat').value;
+        const status = document.getElementById('exportStatus').value;
+        const includeScores = document.getElementById('exportIncludeScores').value === 'true';
+
+        // Get selected fields
+        const selectedFields = [];
+        document.querySelectorAll('#exportFields input:checked').forEach(cb => {
+            selectedFields.push(cb.value);
+        });
+
+        const config = {
+            eventId: exportEventId,
+            eventName: exportEventName,
+            fileFormat: format,
+            participantStatus: status,
+            includeScores: includeScores,
+            includePaymentDetails: true,
+            selectedFields: selectedFields
+        };
+
+        try {
+            const response = await fetch('/admin/events/export/custom', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${exportEventName.replace(/ /g, '_')}_Participants.${format === 'EXCEL' ? 'xlsx' : 'csv'}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+                showAlert('✅ Export started successfully!', 'success');
+            } else {
+                showAlert('❌ Export failed', 'error');
+            }
+        } catch (error) {
+            showAlert('❌ Error during export', 'error');
+        }
+        closeModal('exportModal');
+    }
+
+    // ========== DELETE MODAL WITH AUTO-BACKUP ==========
+    function showDeleteModal(button) {
+        currentEventId = button.getAttribute('data-id');
+        currentEventName = button.getAttribute('data-name');
+        currentEventParticipants = parseInt(button.getAttribute('data-participants')) || 0;
+
+        const message = `
+            <strong>⚠️ WARNING: This action cannot be undone!</strong><br><br>
+            📅 Event: <strong>${currentEventName}</strong><br>
+            👥 Total Participants: <strong>${currentEventParticipants}</strong><br><br>
+            ⚡ A backup of all participant data will be downloaded automatically before deletion.<br>
+            <span style="color: #DC2626;">This backup includes all participant details, scores, and payment information.</span>
+        `;
+        document.getElementById('deleteMessage').innerHTML = message;
+        document.getElementById('deleteConfirm').value = '';
+        document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    async function confirmDelete() {
+        const confirmText = document.getElementById('deleteConfirm').value;
+        if (confirmText !== 'DELETE') {
+            showAlert('Please type "DELETE" to confirm deletion', 'error');
+            return;
+        }
+
+        const backupFormat = document.getElementById('backupFormat').value;
+        const includeScores = document.getElementById('backupIncludeScores').value === 'true';
+
+        // Get all selected fields for backup
+        const selectedFields = [];
+        document.querySelectorAll('#exportFields input:checked').forEach(cb => {
+            selectedFields.push(cb.value);
+        });
+
+        const backupConfig = {
+            eventId: currentEventId,
+            eventName: currentEventName,
+            fileFormat: backupFormat,
+            participantStatus: 'ALL',
+            includeScores: includeScores,
+            includePaymentDetails: true,
+            selectedFields: selectedFields
+        };
+
+        showAlert('📥 Downloading backup before deletion...', 'success');
+
+        try {
+            // Download backup first
+            const backupResponse = await fetch('/admin/events/export/custom', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(backupConfig)
+            });
+
+            if (backupResponse.ok) {
+                const blob = await backupResponse.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+                a.download = `${currentEventName.replace(/ /g, '_')}_BACKUP_${timestamp}.${backupFormat === 'EXCEL' ? 'xlsx' : 'csv'}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+
+                showAlert('✅ Backup downloaded! Now deleting event...', 'success');
+
+                // Wait a moment for download to start
+                setTimeout(async () => {
+                    // Now delete the event
+                    const deleteResponse = await fetch(`/admin/events/delete/${currentEventId}`, {
+                        method: 'DELETE'
+                    });
+
+                    const deleteResult = await deleteResponse.json();
+
+                    if (deleteResult.success) {
+                        showAlert(`✅ Event "${currentEventName}" deleted successfully!`, 'success');
+                        setTimeout(() => { window.location.reload(); }, 2000);
+                    } else {
+                        showAlert(`❌ ${deleteResult.error || 'Failed to delete event'}`, 'error');
+                    }
+                }, 1000);
+            } else {
+                const error = await backupResponse.text();
+                showAlert(`❌ Backup failed: ${error}`, 'error');
+            }
+        } catch (error) {
+            showAlert('❌ Error during backup/delete process', 'error');
+        }
+        closeModal('deleteModal');
+    }
+    // ========== REPORT MODAL ==========
+    async function viewReport(button) {
+        const eventId = button.getAttribute('data-id');
+        document.getElementById('reportModal').style.display = 'flex';
+        document.getElementById('reportContent').innerHTML = '<div style="text-align:center; padding:20px;">Loading...</div>';
+
+        try {
+            const response = await fetch(`/admin/events/report/${eventId}`);
+            const data = await response.json();
+
+            const reportHtml = `
+                <div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #EFF6FF; padding: 15px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #1D4ED8;">${data.totalParticipants}</div>
+                        <div style="font-size: 12px;">Total Participants</div>
+                    </div>
+                    <div style="background: #D1FAE5; padding: 15px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #059669;">${data.approvedParticipants}</div>
+                        <div style="font-size: 12px;">Approved</div>
+                    </div>
+                    <div style="background: #FEF3C7; padding: 15px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: bold; color: #D97706;">${data.pendingParticipants}</div>
+                        <div style="font-size: 12px;">Pending</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #1D4ED8, #7C3AED); padding: 15px; border-radius: 12px; text-align: center; color: white;">
+                        <div style="font-size: 28px; font-weight: bold;">₹${data.totalCollected}</div>
+                        <div style="font-size: 12px;">Total Collected</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 15px;">
+                    <div style="background: #F8F9FA; padding: 15px; border-radius: 12px;">
+                        <div style="font-size: 12px; color: #666;">Average Score</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #1D4ED8;">${data.avgScore}</div>
+                    </div>
+                    <div style="background: #F8F9FA; padding: 15px; border-radius: 12px;">
+                        <div style="font-size: 12px; color: #666;">Top Score</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #D97706;">${data.topScore}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: #F8F9FA; border-radius: 12px;">
+                    <div style="font-size: 12px; color: #666;">Event Name</div>
+                    <div style="font-size: 16px; font-weight: bold;">${data.eventName}</div>
+                </div>
+            `;
+            document.getElementById('reportContent').innerHTML = reportHtml;
+        } catch (error) {
+            document.getElementById('reportContent').innerHTML = '<div style="text-align:center; padding:20px; color:red;">Error loading report</div>';
+        }
+    }
+
+    // ========== UTILITIES ==========
+    function searchEvents() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#eventsTableBody tr');
+        rows.forEach(row => {
+            const eventName = row.cells[0].innerText.toLowerCase();
+            if (eventName.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>

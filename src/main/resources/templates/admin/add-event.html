@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Event | TechFest 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: #F7F6F2;
+            color: #111118;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255,255,255,.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #E5E2D9;
+            padding: 0 32px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-text span {
+            color: #D97706;
+            background: none;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #F7F6F2;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .admin-name span {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .logout-btn {
+            background: #DC2626;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #B91C1C;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #E5E2D9;
+            position: sticky;
+            top: 70px;
+            z-index: 999;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .nav-link {
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #55525F;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: #1D4ED8;
+            background: #F7F6F2;
+        }
+
+        .nav-link.active {
+            color: #1D4ED8;
+            border-bottom-color: #1D4ED8;
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #E5E2D9;
+            padding: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111118;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        input, select, textarea {
+            padding: 12px 14px;
+            border: 1.5px solid #E5E2D9;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Manrope', sans-serif;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #1D4ED8;
+            box-shadow: 0 0 0 3px rgba(29,78,216,0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input[type="date"] {
+            cursor: pointer;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.success {
+            background: #D1FAE5;
+            color: #065F46;
+            border-left: 4px solid #059669;
+        }
+
+        .alert.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border-left: 4px solid #DC2626;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 24px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(29,78,216,0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #1D4ED8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            background: #0A0A10;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 48px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full {
+                grid-column: span 1;
+            }
+            .header {
+                padding: 0 20px;
+            }
+            .form-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">
+        <div class="logo-icon">TF</div>
+        <div class="logo-text">Tech<span>Fest</span> 2025</div>
+    </div>
+    <div class="header-right">
+        <div class="admin-name">
+            <span>A</span>
+            Admin
+        </div>
+        <a href="/admin/logout" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<div class="navbar">
+    <div class="nav-container">
+        <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/events/create" class="nav-link active">Create Event</a>
+        <a href="/admin/events" class="nav-link">Manage Events</a>
+        <a href="/admin/registrations" class="nav-link">Registrations</a>
+        <a href="/admin/judges" class="nav-link">Manage Judges</a>
+        <a href="/admin/assign-judge" class="nav-link">Assign Judge</a>
+        <a href="/admin/design-criteria" class="nav-link">Design Criteria</a>
+        <a href="/admin/certificates" class="nav-link">Certificates</a>
+        <a href="/judge/login" class="nav-link" target="_blank">Judge Login</a>
+    </div>
+</div>
+
+<div class="main">
+    <a href="/admin/events" class="back-link">← Back to Events</a>
+
+    <div class="page-header">
+        <h1>Create New Event</h1>
+    </div>
+
+    <!-- Alert Container for Messages -->
+    <div id="alertContainer"></div>
+
+    <div class="form-card">
+        <form id="eventForm" action="/admin/events/create" method="post">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Event Name</label>
+                    <input type="text" name="eventName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Event Type</label>
+                    <select name="category" required>
+                        <option value="Technical">Technical</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Management">Management</option>
+                        <option value="Workshop">Workshop</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="eventDate" id="eventDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Venue</label>
+                    <input type="text" name="venue" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Fee (₹)</label>
+                    <input type="number" name="fee" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Participation Type</label>
+                    <select name="participationType" id="typeSelect" required>
+                        <option value="Solo">Solo</option>
+                        <option value="Group">Group</option>
+                        <option value="Both">Both</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="groupField" style="display:none;">
+                    <label>Members per Group</label>
+                    <input type="number" name="groupSize" min="1">
+                </div>
+
+                <div class="form-group full">
+                    <label>Max Participants</label>
+                    <input type="number" name="maxParticipants" min="1" required>
+                </div>
+
+                <div class="form-group full">
+                    <label>Description</label>
+                    <textarea name="description"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Create Event</button>
+        </form>
+    </div>
+</div>
+
+<footer class="footer">
+    Designed & Developed with ❤ by <strong style="color: #DAA520;">Sumit Dipak Thakare</strong>
+    <br>
+    <small>© 2025 TechFest 2025 | VIIT Baramati</small>
+</footer>
+
+<script>
+    // Set min date to today (cannot select past dates)
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('eventDate').setAttribute('min', today);
+
+    // Dynamic Group Field toggle
+    const typeSelect = document.getElementById('typeSelect');
+    const groupField = document.getElementById('groupField');
+
+    typeSelect.addEventListener('change', function() {
+        if (this.value === 'Group' || this.value === 'Both') {
+            groupField.style.display = 'block';
+        } else {
+            groupField.style.display = 'none';
+        }
+    });
+
+    // Trigger on page load
+    if (typeSelect.value === 'Group' || typeSelect.value === 'Both') {
+        groupField.style.display = 'block';
+    }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert ${type}">
+                <span>${type === 'success' ? '✅' : '❌'}</span>
+                <span>${message}</span>
+            </div>
+        `;
+        setTimeout(() => {
+            alertContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    // Form validation
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+        const eventDate = document.getElementById('eventDate').value;
+        const selectedDate = new Date(eventDate);
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0);
+
+        if (selectedDate < todayDate) {
+            e.preventDefault();
+            showAlert('Event date cannot be in the past! Please select a future date.', 'error');
+            return false;
+        }
+
+        const fee = document.querySelector('input[name="fee"]').value;
+        if (fee < 0) {
+            e.preventDefault();
+            showAlert('Fee cannot be negative!', 'error');
+            return false;
+        }
+
+        const maxParticipants = document.querySelector('input[name="maxParticipants"]').value;
+        if (maxParticipants < 1) {
+            e.preventDefault();
+            showAlert('Max participants must be at least 1!', 'error');
+            return false;
+        }
+
+        const participationType = document.querySelector('select[name="participationType"]').value;
+        if (participationType === 'Group' || participationType === 'Both') {
+            const groupSize = document.querySelector('input[name="groupSize"]').value;
+            if (!groupSize || groupSize < 2) {
+                e.preventDefault();
+                showAlert('Group size must be at least 2 for group events!', 'error');
+                return false;
+            }
+        }
+
+        // Show success message (will disappear when page redirects)
+        showAlert('Creating event...', 'success');
+        return true;
+    });
+
+    // Check URL parameters for success/error messages (after redirect)
+    window.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const error = urlParams.get('error');
+
+        if (success) {
+            showAlert(success, 'success');
+            // Remove from URL without reload
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        if (error) {
+            showAlert(error, 'error');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    });
+</script>
+
+</body>
+</html>

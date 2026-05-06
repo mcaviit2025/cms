@@ -11,4 +11,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     List<Payment> findAllByRegistrationId(int registrationId);
 
     void deleteByRegistrationId(int registrationId);
+
+    Optional<Payment> findByRegistrationId(int registrationId);
 }

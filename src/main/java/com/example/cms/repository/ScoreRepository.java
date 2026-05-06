@@ -3,6 +3,8 @@ package com.example.cms.repository;
 import com.example.cms.entity.Score;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +16,14 @@ public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
     List<Score> findByEventId(Integer eventId);
 
+    List<Score> findByRegistrationId(Integer registrationId);
+
     @Query("SELECT COUNT(s) FROM Score s WHERE s.eventId = :eventId AND s.judgeId = :judgeId")
     long countByEventIdAndJudgeId(Integer eventId, Integer judgeId);
 
     @Query("SELECT COUNT(s) FROM Score s WHERE s.eventId = :eventId")
     long countByEventId(Integer eventId);
+
+    @Query("SELECT s FROM Score s LEFT JOIN FETCH s.judge WHERE s.eventId = :eventId")
+    List<Score> findScoresWithJudgeDetails(@Param("eventId") Integer eventId);
 }

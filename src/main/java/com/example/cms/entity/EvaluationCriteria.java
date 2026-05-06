@@ -1,6 +1,8 @@
 package com.example.cms.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,6 +15,12 @@ public class EvaluationCriteria {
 
     @Column(name = "event_id", nullable = false)
     private Integer eventId;
+
+    // ✅ @OnDelete CASCADE → deleting an event deletes its criteria at DB level
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", insertable = false, updatable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Event event;
 
     @Column(name = "criteria_name", nullable = false)
     private String criteriaName;
@@ -37,7 +45,6 @@ public class EvaluationCriteria {
         createdAt = LocalDateTime.now();
     }
 
-    // Constructors
     public EvaluationCriteria() {}
 
     public EvaluationCriteria(Integer eventId, String criteriaName, Integer maxMarks, String description) {
@@ -49,12 +56,14 @@ public class EvaluationCriteria {
         this.isActive = true;
     }
 
-    // Getters and Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
     public Integer getEventId() { return eventId; }
     public void setEventId(Integer eventId) { this.eventId = eventId; }
+
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) { this.event = event; }
 
     public String getCriteriaName() { return criteriaName; }
     public void setCriteriaName(String criteriaName) { this.criteriaName = criteriaName; }

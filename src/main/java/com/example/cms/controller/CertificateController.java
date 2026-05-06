@@ -2,6 +2,7 @@ package com.example.cms.controller;
 
 import com.example.cms.entity.Event;
 import com.example.cms.entity.Registration;
+import com.example.cms.service.CertificateEmailService;
 import com.example.cms.service.DynamicCertificateService;
 import com.example.cms.service.EventService;
 import com.example.cms.service.RegistrationService;
@@ -18,11 +19,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin/certificates")
@@ -40,35 +43,43 @@ public class CertificateController {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private CertificateEmailService certificateEmailService;
+
     @Value("${spring.mail.username}")
     private String fromEmail;
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Page
-    // ─────────────────────────────────────────────────────────────────────────
 
     @GetMapping
     public String certificateManagement(Model model, HttpSession session) {
         if (session.getAttribute("adminLoggedIn") == null) {
             return "redirect:/admin/login";
         }
-        model.addAttribute("events", eventService.getAllEvents());
+        List<Event> events = eventService.getAllEvents();
+        model.addAttribute("events", events);
         return "admin/certificate-management";
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // List participants for an event
-    // ─────────────────────────────────────────────────────────────────────────
 
     @GetMapping("/event/{eventId}")
     @ResponseBody
     public List<Registration> getEventParticipants(@PathVariable Integer eventId) {
-        return registrationService.getRegistrationsByEventId(eventId);
-    }
+        List<Registration> registrations = registrationService.getRegistrationsByEventId(eventId);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Download certificate as PDF
-    // ─────────────────────────────────────────────────────────────────────────
+        // Filter only APPROVED registrations for certificate page
+        List<Registration> approvedRegistrations = registrations.stream()
+                .filter(r -> "APPROVED".equalsIgnoreCase(r.getStatus()))
+                .collect(Collectors.toList());
+
+        // Clean up data to avoid JSON issues
+        for (Registration reg : approvedRegistrations) {
+            if (reg.getMemberNames() == null) reg.setMemberNames("");
+            if (reg.getMemberEmails() == null) reg.setMemberEmails("");
+            if (reg.getTeamName() == null) reg.setTeamName("");
+            if (reg.getParticipantCode() == null) reg.setParticipantCode("");
+            if (reg.getEmailStatus() == null) reg.setEmailStatus("NOT_SENT");
+        }
+
+        return approvedRegistrations;
+    }
 
     @GetMapping("/download/{registrationId}")
     public void downloadCertificate(@PathVariable Integer registrationId,
@@ -80,192 +91,124 @@ public class CertificateController {
         }
 
         Registration registration = registrationService.getRegistrationById(registrationId);
+        if (registration == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Registration not found");
+            return;
+        }
+
         Event event = eventService.getEventById(registration.getEventId());
+        if (event == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Event not found");
+            return;
+        }
 
-        byte[] pdfBytes = dynamicCertificateService.generateCertificatePdf(
-                registration, event, registration.getLeaderName());
+        byte[] pdfBytes = dynamicCertificateService.generateCertificatePdf(registration, event, registration.getLeaderName());
 
-        String fileName = "Certificate_" + registration.getLeaderName().replaceAll("\\s+", "_") + ".pdf";
-        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        String fileName = "Certificate_" + registration.getLeaderName().replaceAll(" ", "_") + ".pdf";
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
 
         response.setContentType("application/pdf");
-        response.setContentLength(pdfBytes.length);
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
         response.getOutputStream().write(pdfBytes);
         response.getOutputStream().flush();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Send single certificate via email
-    // ─────────────────────────────────────────────────────────────────────────
-
     @PostMapping("/send/{registrationId}")
     @ResponseBody
-    public Map<String, Object> sendCertificateEmail(@PathVariable Integer registrationId) {
-        Map<String, Object> result = new HashMap<>();
+    public Map<String, Object> sendCertificateEmail(@PathVariable Integer registrationId, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (session.getAttribute("adminLoggedIn") == null) {
+            response.put("success", false);
+            response.put("error", "Not logged in");
+            return response;
+        }
+
         try {
             Registration registration = registrationService.getRegistrationById(registrationId);
-
-            // ✅ FIX: Validate email before attempting to send
-            String toEmail = registration.getLeaderEmail();
-            if (toEmail == null || toEmail.trim().isEmpty()) {
-                result.put("success", false);
-                result.put("error", "No email address found for participant: " + registration.getLeaderName());
-                return result;
+            if (registration == null) {
+                response.put("success", false);
+                response.put("error", "Registration not found");
+                return response;
             }
 
             Event event = eventService.getEventById(registration.getEventId());
-
-            // 1. Generate PDF
-            byte[] pdfBytes = dynamicCertificateService.generateCertificatePdf(
-                    registration, event, registration.getLeaderName());
-
-            if (pdfBytes == null || pdfBytes.length == 0) {
-                throw new Exception("PDF generation failed (0 bytes).");
+            if (event == null) {
+                response.put("success", false);
+                response.put("error", "Event not found");
+                return response;
             }
 
-            // 2. Send email with PDF attachment
-            sendEmail(toEmail.trim(),
-                    registration.getLeaderName(),
-                    event.getEventName(),
-                    pdfBytes);
+            // Send email based on participation type
+            if ("Group".equalsIgnoreCase(registration.getParticipationType())) {
+                certificateEmailService.sendCertificateToGroup(registration, event);
+            } else {
+                certificateEmailService.sendCertificateToParticipant(registration, event,
+                        registration.getLeaderName(), registration.getLeaderEmail());
+            }
 
-            // 3. Mark as SENT in database
+            // Update email status
             registration.setEmailStatus("SENT");
             registrationService.save(registration);
 
-            result.put("success", true);
-            result.put("message", "Certificate successfully sent to " + toEmail);
+            response.put("success", true);
+            response.put("message", "Certificate sent successfully");
 
         } catch (Exception e) {
             e.printStackTrace();
-            result.put("success", false);
-            result.put("error", "Failed to send email: " + e.getMessage());
+            response.put("success", false);
+            response.put("error", e.getMessage());
         }
-        return result;
-    }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // ✅ NEW: Send all pending certificates for an event
-    // ─────────────────────────────────────────────────────────────────────────
+        return response;
+    }
 
     @PostMapping("/send-all/{eventId}")
     @ResponseBody
-    public Map<String, Object> sendAllCertificates(@PathVariable Integer eventId) {
-        Map<String, Object> result = new HashMap<>();
-        int successCount = 0;
-        int failCount = 0;
-        StringBuilder errors = new StringBuilder();
+    public Map<String, Object> sendAllCertificates(@PathVariable Integer eventId, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (session.getAttribute("adminLoggedIn") == null) {
+            response.put("success", false);
+            response.put("error", "Not logged in");
+            return response;
+        }
 
         try {
-            List<Registration> registrations = registrationService.getRegistrationsByEventId(eventId);
             Event event = eventService.getEventById(eventId);
+            if (event == null) {
+                response.put("success", false);
+                response.put("error", "Event not found");
+                return response;
+            }
 
-            // Only process APPROVED registrations not yet sent
-            List<Registration> pending = registrations.stream()
-                    .filter(r -> "APPROVED".equals(r.getStatus()) && !"SENT".equals(r.getEmailStatus()))
+            List<Registration> registrations = registrationService.getRegistrationsByEventId(eventId);
+            List<Registration> approvedRegistrations = registrations.stream()
+                    .filter(r -> "APPROVED".equalsIgnoreCase(r.getStatus()))
                     .toList();
 
-            if (pending.isEmpty()) {
-                result.put("success", true);
-                result.put("message", "No pending certificates to send.");
-                return result;
-            }
-
-            for (Registration registration : pending) {
-                try {
-                    String toEmail = registration.getLeaderEmail();
-                    if (toEmail == null || toEmail.trim().isEmpty()) {
-                        failCount++;
-                        errors.append("No email for ").append(registration.getLeaderName()).append(". ");
-                        continue;
-                    }
-
-                    byte[] pdfBytes = dynamicCertificateService.generateCertificatePdf(
-                            registration, event, registration.getLeaderName());
-
-                    if (pdfBytes == null || pdfBytes.length == 0) {
-                        failCount++;
-                        errors.append("PDF empty for ").append(registration.getLeaderName()).append(". ");
-                        continue;
-                    }
-
-                    sendEmail(toEmail.trim(), registration.getLeaderName(), event.getEventName(), pdfBytes);
-
-                    registration.setEmailStatus("SENT");
-                    registrationService.save(registration);
-                    successCount++;
-
-                } catch (Exception e) {
-                    failCount++;
-                    errors.append(registration.getLeaderName()).append(": ").append(e.getMessage()).append(". ");
+            int sentCount = 0;
+            for (Registration reg : approvedRegistrations) {
+                if ("Group".equalsIgnoreCase(reg.getParticipationType())) {
+                    certificateEmailService.sendCertificateToGroup(reg, event);
+                } else {
+                    certificateEmailService.sendCertificateToParticipant(reg, event,
+                            reg.getLeaderName(), reg.getLeaderEmail());
                 }
+                reg.setEmailStatus("SENT");
+                registrationService.save(reg);
+                sentCount++;
             }
 
-            result.put("success", failCount == 0);
-            result.put("message", successCount + " certificate(s) sent successfully."
-                    + (failCount > 0 ? " " + failCount + " failed: " + errors : ""));
+            response.put("success", true);
+            response.put("message", "Certificates sent to " + sentCount + " participants");
 
         } catch (Exception e) {
             e.printStackTrace();
-            result.put("success", false);
-            result.put("error", "Unexpected error: " + e.getMessage());
+            response.put("success", false);
+            response.put("error", e.getMessage());
         }
-        return result;
-    }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Internal: send email with PDF attachment
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private void sendEmail(String toEmail, String recipientName, String eventName, byte[] pdfBytes) throws Exception {
-        MimeMessage message = mailSender.createMimeMessage();
-
-        // true = multipart (required for attachments)
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-        helper.setFrom(fromEmail);
-        helper.setTo(toEmail);
-        helper.setSubject("🎓 Certificate: " + eventName);
-
-        String body = "<h3>Hello " + recipientName + ",</h3>"
-                + "<p>Please find your participation certificate for <b>" + eventName + "</b> attached.</p>"
-                + "<p>Best Regards,<br/>TechFest Team</p>";
-
-        helper.setText(body, true);
-
-        // ✅ FIX: Custom ByteArrayResource that returns a proper filename.
-        // Spring's default ByteArrayResource.getFilename() returns null,
-        // which causes many SMTP servers to reject or strip the attachment.
-        final String fileName = "Certificate_" + recipientName.replaceAll("\\s+", "_") + ".pdf";
-        ByteArrayResource pdfResource = new ByteArrayResource(pdfBytes) {
-            @Override
-            public String getFilename() {
-                return fileName;
-            }
-        };
-
-        helper.addAttachment(fileName, pdfResource, "application/pdf");
-        mailSender.send(message);
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // SMTP connectivity test
-    // ─────────────────────────────────────────────────────────────────────────
-
-    @GetMapping("/test-mail")
-    @ResponseBody
-    public String testMail() {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(fromEmail);
-            message.setSubject("CMS SMTP Test");
-            message.setText("If you see this, your email configuration is correct.");
-            message.setFrom(fromEmail);
-            mailSender.send(message);
-            return "✅ Test email sent to " + fromEmail;
-        } catch (Exception e) {
-            return "❌ Test failed: " + e.getMessage();
-        }
+        return response;
     }
 }

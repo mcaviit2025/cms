@@ -1,6 +1,8 @@
 package com.example.cms.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,14 +19,33 @@ public class Score {
     @Column(name = "event_id", nullable = false)
     private Integer eventId;
 
-    @Column(name = "judge_id", nullable = false)
+    // ✅ nullable = true → allows SET NULL when judge is deleted
+    @Column(name = "judge_id", nullable = true)
     private Integer judgeId;
+
+    // ✅ @OnDelete CASCADE → deleting a registration deletes its scores at DB level
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "registration_id", insertable = false, updatable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Registration registration;
+
+    // ✅ @OnDelete CASCADE → deleting an event deletes its scores at DB level
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", insertable = false, updatable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Event event;
+
+    // ✅ @OnDelete SET_NULL → deleting a judge sets judge_id to NULL, score row is kept
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "judge_id", insertable = false, updatable = false, nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    private Judge judge;
 
     @Column(name = "total_score")
     private Integer totalScore;
 
     @Column(name = "scores_data", length = 2000)
-    private String scoresData;  // JSON format: {"criteriaId1": 25, "criteriaId2": 30}
+    private String scoresData;
 
     @Column(length = 500)
     private String comments;
@@ -49,7 +70,6 @@ public class Score {
         updatedAt = LocalDateTime.now();
     }
 
-    // Constructors
     public Score() {}
 
     public Score(Integer registrationId, Integer eventId, Integer judgeId) {
@@ -60,7 +80,6 @@ public class Score {
         this.isFinalized = false;
     }
 
-    // Getters and Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -90,4 +109,22 @@ public class Score {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public Registration getRegistration() { return registration; }
+    public void setRegistration(Registration registration) {
+        this.registration = registration;
+        if (registration != null) this.registrationId = registration.getId();
+    }
+
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) {
+        this.event = event;
+        if (event != null) this.eventId = event.getEventId();
+    }
+
+    public Judge getJudge() { return judge; }
+    public void setJudge(Judge judge) {
+        this.judge = judge;
+        this.judgeId = (judge != null) ? judge.getId() : null;
+    }
 }
